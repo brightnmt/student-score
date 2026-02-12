@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบคะแนนนักเรียน</title>
+
+<style>
+body {
+  font-family: "Sarabun", sans-serif;
+  background: linear-gradient(135deg,#f8bbd0,#f48fb1,#f06292);
+  margin: 0;
+  padding: 20px;
+}
+
+h2 { 
+  text-align:center; 
+  color:#880e4f;
+}
+
+.search-container {
+  position: relative;
+  max-width: 500px;
+  margin: auto;
+}
+
+.search-input {
+  width:100%;
+  padding:14px 18px 14px 45px;
+  border-radius:12px;
+  border:none;
+  box-shadow:0 4px 15px rgba(0,0,0,.15);
+  font-size:18px;
+  outline:none;
+}
+
+.search-icon {
+  position:absolute;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.search-dropdown {
+  position:absolute;
+  width:100%;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  margin-top:5px;
+  display:none;
+  max-height:300px;
+  overflow:auto;
+  z-index:100;
+}
+
+.search-item {
+  padding:12px;
+  cursor:pointer;
+}
+
+.search-item:hover {
+  background:#fce4ec;
+}
+
+#studentName {
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  margin:20px 0;
+  color:#880e4f;
+}
+
+.subject-buttons {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-bottom:20px;
+}
+
+.subject-btn {
+  padding:10px 18px;
+  border-radius:30px;
+  border:none;
+  cursor:pointer;
+  background:#fff;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  transition:0.2s;
+}
+
+.subject-btn:hover {
+  transform:translateY(-2px);
+}
+
+.subject-btn.active {
+  background:linear-gradient(45deg,#4caf50,#2e7d32);
+  color:white;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+}
+
+th {
+  background:#004d00;
+  color:white;
+  padding:14px;
+}
+
+td {
+  padding:14px;
+  text-align:center;
+}
+
+tr.total-row td {
+  background:#e91e63;
+  color:white;
+  font-weight:bold;
+}
+
+.grade-A { background:#2ecc71;color:#fff;font-weight:bold;}
+.grade-B { background:#3498db;color:#fff;font-weight:bold;}
+.grade-C { background:#f39c12;color:#fff;font-weight:bold;}
+.grade-D { background:#e67e22;color:#fff;font-weight:bold;}
+.grade-F { background:#e74c3c;color:#fff;font-weight:bold;}
+</style>
+</head>
+
+<body>
+
+<h2>ค้นหานักเรียน</h2>
+
+<div class="search-container">
+  <span class="search-icon">🔍</span>
+  <input type="text" id="studentSearch" class="search-input"
+         placeholder="พิมพ์ชื่อ หรือ รหัสนักเรียน...">
+  <div class="search-dropdown" id="searchDropdown"></div>
+</div>
+
+<div id="studentName"></div>
+<div class="subject-buttons" id="subjectButtons"></div>
+<div id="content"></div>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbwAVWIBh8xoGwFwYd6raV5igaQOPwS-3I3CBe1itNuofaSbUR95UsCm2e27ShuAmhssWQ/exec";
+
+let allData = {};
+
+fetch(API_URL)
+.then(r=>r.json())
+.then(data=> allData=data);
+
+const searchInput=document.getElementById("studentSearch");
+const dropdown=document.getElementById("searchDropdown");
+
+searchInput.addEventListener("input",function(){
+  const v=this.value.toLowerCase();
+  dropdown.innerHTML="";
+  if(!v){ dropdown.style.display="none"; return;}
+
+  Object.entries(allData).forEach(([id,s])=>{
+    if(id.includes(v)||s.name.toLowerCase().includes(v)){
+      const div=document.createElement("div");
+      div.className="search-item";
+      div.textContent=`${id} - ${s.name}`;
+      div.onclick=()=>{
+        dropdown.style.display="none";
+        showStudent(id);
+      };
+      dropdown.appendChild(div);
+    }
+  });
+
+  dropdown.style.display=dropdown.innerHTML?"block":"none";
+});
+
+function showStudent(id){
+  const s=allData[id];
+  if(!s) return;
+
+  document.getElementById("studentName").textContent=
+    `${s.name} (${s.class})`;
+
+  const btns=document.getElementById("subjectButtons");
+  btns.innerHTML="";
+
+  for(const subject in s.subjects){
+
+    const items=s.subjects[subject];
+
+    const btn=document.createElement("button");
+    btn.className="subject-btn";
+    btn.textContent=subject;
+
+    btn.onclick=()=>{
+      document.querySelectorAll(".subject-btn")
+      .forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+
+      document.getElementById("content").innerHTML=
+        renderTable(subject,items);
+    };
+
+    btns.appendChild(btn);
+  }
+
+  document.getElementById("content").innerHTML="";
+}
+
+function renderTable(subjectName,items){
+
+  let total=0,full=0;
+
+  let html=`
+  <table>
+  <tr><th colspan="4">${subjectName}</th></tr>
+  <tr>
+    <th>รายการ</th><th>ได้</th><th>เต็ม</th><th>เกรด</th>
+  </tr>`;
+
+  items.forEach(i=>{
+    const percent=(i.score/i.full)*100;
+    const g=grade(percent);
+    total+=i.score;
+    full+=i.full;
+
+    html+=`
+    <tr>
+      <td>${i.chapter}</td>
+      <td>${i.score}</td>
+      <td>${i.full}</td>
+      <td class="grade-${g}">${g}</td>
+    </tr>`;
+  });
+
+  const totalGrade=grade((total/full)*100);
+
+  html+=`
+  <tr class="total-row">
+    <td>รวม</td>
+    <td>${total}</td>
+    <td>${full}</td>
+    <td>${totalGrade}</td>
+  </tr>
+  </table>`;
+
+  return html;
+}
+
+function grade(p){
+  if(p>=80) return "A";
+  if(p>=70) return "B";
+  if(p>=60) return "C";
+  if(p>=50) return "D";
+  return "F";
+}
+
+</script>
+
+</body>
+</html>
+
