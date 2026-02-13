@@ -3,267 +3,483 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบคะแนนนักเรียน</title>
+<title>Student Dashboard Ultimate</title>
 
 <style>
-body {
-  font-family: "Sarabun", sans-serif;
-  background: linear-gradient(135deg,#f8bbd0,#f48fb1,#f06292);
-  margin: 0;
-  padding: 20px;
+body{
+  font-family:"Sarabun",sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#4caf50,#e91e63);
+  background-size:400% 400%;
+  animation:bgMove 12s ease infinite;
+}
+@keyframes bgMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 
-h2 { 
-  text-align:center; 
-  color:#880e4f;
-}
+h2{text-align:center;color:white;}
+.status{text-align:center;color:white;margin:10px;}
 
-.search-container {
-  position: relative;
-  max-width: 500px;
-  margin: auto;
-}
-
-.search-input {
+.search-container{max-width:500px;margin:20px auto;position:relative;}
+.search-input{
   width:100%;
   padding:14px 18px 14px 45px;
-  border-radius:12px;
+  border-radius:15px;
   border:none;
-  box-shadow:0 4px 15px rgba(0,0,0,.15);
-  font-size:18px;
-  outline:none;
+  font-size:16px;
+  box-shadow:0 8px 25px rgba(0,0,0,.3);
 }
-
-.search-icon {
+.search-icon{
   position:absolute;
   left:15px;
   top:50%;
   transform:translateY(-50%);
 }
-
-.search-dropdown {
-  position:absolute;
+.search-dropdown{
   width:100%;
-  background:#fff;
-  border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,.2);
-  margin-top:5px;
-  display:none;
+  background:white;
+  border-radius:15px;
+  box-shadow:0 15px 35px rgba(0,0,0,.25);
+  margin-top:10px;
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-10px);
+  transition:all .35s ease;
+}
+.search-dropdown.show{
   max-height:300px;
+  opacity:1;
+  transform:translateY(0);
   overflow:auto;
-  z-index:100;
 }
-
-.search-item {
-  padding:12px;
+.search-item{
+  padding:14px;
   cursor:pointer;
+  transition:.2s;
+}
+.search-item:hover{
+  background:linear-gradient(90deg,#4caf50,#e91e63);
+  color:white;
 }
 
-.search-item:hover {
-  background:#fce4ec;
-}
-
-#studentName {
+#studentName{
   text-align:center;
-  font-size:22px;
+  font-size:24px;
   font-weight:bold;
-  margin:20px 0;
-  color:#880e4f;
+  color:white;
+  margin-top:25px;
+  margin-bottom:10px;
 }
 
-.subject-buttons {
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
+/* Summary */
+.summary-container{
+  display:none;
   justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
+  margin:25px 0;
+}
+.summary-card{
+  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,.2);
+  border-radius:20px;
+  padding:20px;
+  width:220px;
+  text-align:center;
+  color:white;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+}
+.summary-card .value{
+  font-size:26px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+/* Progress */
+.progress-section{
+  display:none;
+  margin-bottom:30px;
+  text-align:center;
+}
+.progress-bar{
+  height:45px;
+  max-width:750px;
+  margin:auto;
+  background:rgba(255,255,255,.3);
+  border-radius:50px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-weight:bold;
+  border-radius:50px;
+  transition:width .8s ease;
+  position:relative;
+  overflow:hidden;
+}
+.progress-fill::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-40%;
+  width:40%;
+  height:100%;
+  background:linear-gradient(120deg,
+    rgba(255,255,255,0.2) 0%,
+    rgba(255,255,255,0.7) 50%,
+    rgba(255,255,255,0.2) 100%);
+  animation:shine 3s infinite;
+}
+@keyframes shine{
+  0%{left:-40%;}
+  100%{left:120%;}
+}
+
+/* Subject Buttons */
+.subject-buttons{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
   margin-bottom:20px;
 }
-
-.subject-btn {
+.subject-btn{
   padding:10px 18px;
+  border-radius:25px;
+  border:none;
+  cursor:pointer;
+  background:white;
+  font-weight:bold;
+  box-shadow:0 4px 15px rgba(0,0,0,.2);
+}
+.subject-btn.active{
+  background:#2e7d32;
+  color:white;
+}
+
+/* Rank Button */
+.rank-toggle{
+  display:block;
+  margin:20px auto;
+  padding:12px 28px;
   border-radius:30px;
   border:none;
   cursor:pointer;
-  background:#fff;
-  box-shadow:0 4px 10px rgba(0,0,0,.15);
-  transition:0.2s;
-}
-
-.subject-btn:hover {
-  transform:translateY(-2px);
-}
-
-.subject-btn.active {
-  background:linear-gradient(45deg,#4caf50,#2e7d32);
-  color:white;
-}
-
-table {
-  width:100%;
-  border-collapse:collapse;
-  background:#fff;
-  border-radius:15px;
-  overflow:hidden;
-  box-shadow:0 8px 20px rgba(0,0,0,.2);
-}
-
-th {
-  background:#004d00;
-  color:white;
-  padding:14px;
-}
-
-td {
-  padding:14px;
-  text-align:center;
-}
-
-tr.total-row td {
-  background:#e91e63;
+  background:linear-gradient(90deg,#1b5e20,#4caf50,#e91e63);
+  background-size:200% 200%;
   color:white;
   font-weight:bold;
+  font-size:15px;
+  letter-spacing:.5px;
+  transition:all .3s ease;
+  box-shadow:0 8px 20px rgba(0,0,0,.3);
 }
+.rank-toggle:active{transform:scale(.95);}
 
-.grade-A { background:#2ecc71;color:#fff;font-weight:bold;}
-.grade-B { background:#3498db;color:#fff;font-weight:bold;}
-.grade-C { background:#f39c12;color:#fff;font-weight:bold;}
-.grade-D { background:#e67e22;color:#fff;font-weight:bold;}
-.grade-F { background:#e74c3c;color:#fff;font-weight:bold;}
+.rank-section{display:none;margin-top:10px;}
+.medal{font-size:22px;}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+  margin-bottom:15px;
+}
+th{background:#2e7d32;color:white;padding:14px;}
+td{padding:14px;text-align:center;}
+.total-row{background:#e91e63;color:white;font-weight:bold;}
+.highlight{background:#028ad4 !important;color:white;font-weight:bold;}
+
+.grade-A{background:#1b5e20;color:#fff;}
+.grade-B{background:#1565c0;color:#fff;}
+.grade-C{background:#ef6c00;color:#fff;}
+.grade-D{background:#f9a825;color:#fff;}
+.grade-F{background:#c62828;color:#fff;}
+
+/* 🎓 Grade Detail Box */
+.grade-detail-box{
+  margin-top:25px;
+  padding:25px;
+  border-radius:20px;
+  background:rgba(255,255,255,.15);
+  backdrop-filter:blur(12px);
+  color:white;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+  animation:fadeIn .5s ease;
+}
+.grade-detail-box h3{
+  text-align:center;
+  margin-bottom:15px;
+}
+.grade-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:15px;
+}
+.grade-item{
+  padding:15px;
+  border-radius:15px;
+  text-align:center;
+  font-weight:bold;
+  box-shadow:0 4px 15px rgba(0,0,0,.25);
+}
+.grade-A-box{background:#1b5e20;}
+.grade-B-box{background:#1565c0;}
+.grade-C-box{background:#ef6c00;}
+.grade-D-box{background:#f9a825;color:#000;}
+.grade-F-box{background:#c62828;}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
 </style>
 </head>
 
 <body>
 
-<h2>ค้นหานักเรียน</h2>
+<h2>🎓 ระบบค้นหาคะแนนนักเรียน โกโกคิดส์ สงขลา</h2>
+<div class="status" id="statusText">กำลังโหลดข้อมูล...</div>
 
 <div class="search-container">
   <span class="search-icon">🔍</span>
-  <input type="text" id="studentSearch" class="search-input"
-         placeholder="พิมพ์ชื่อ หรือ รหัสนักเรียน...">
+  <input type="text" id="studentSearch"
+         class="search-input"
+         placeholder="พิมพ์ชื่อ หรือ รหัสนักเรียน..." disabled>
   <div class="search-dropdown" id="searchDropdown"></div>
 </div>
 
 <div id="studentName"></div>
+<div class="summary-container" id="summaryContainer"></div>
+
+<div class="progress-section" id="progressSection">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
 <div class="subject-buttons" id="subjectButtons"></div>
 <div id="content"></div>
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbwAVWIBh8xoGwFwYd6raV5igaQOPwS-3I3CBe1itNuofaSbUR95UsCm2e27ShuAmhssWQ/exec";
-
-let allData = {};
+const API_URL="https://script.google.com/macros/s/AKfycbwAVWIBh8xoGwFwYd6raV5igaQOPwS-3I3CBe1itNuofaSbUR95UsCm2e27ShuAmhssWQ/exec";
+let allData={}, currentStudent=null, currentId=null;
 
 fetch(API_URL)
 .then(r=>r.json())
-.then(data=> allData=data);
+.then(data=>{
+  allData=data;
+  document.getElementById("statusText").textContent="พร้อมค้นหา";
+  document.getElementById("studentSearch").disabled=false;
+});
+
+function grade(p){
+  if(p>=80)return"A";
+  if(p>=70)return"B";
+  if(p>=60)return"C";
+  if(p>=50)return"D";
+  return"F";
+}
+function getColor(g){
+  return {A:"#1b5e20",B:"#1565c0",C:"#ef6c00",D:"#f9a825",F:"#c62828"}[g];
+}
+function getRankDisplay(rank){
+  if(rank===1)return'<span class="medal">🥇</span>';
+  if(rank===2)return'<span class="medal">🥈</span>';
+  if(rank===3)return'<span class="medal">🥉</span>';
+  return rank;
+}
 
 const searchInput=document.getElementById("studentSearch");
 const dropdown=document.getElementById("searchDropdown");
 
 searchInput.addEventListener("input",function(){
-  const v=this.value.toLowerCase();
+  const keyword=this.value.toLowerCase();
   dropdown.innerHTML="";
-  if(!v){ dropdown.style.display="none"; return;}
-
+  if(!keyword){dropdown.classList.remove("show");return;}
   Object.entries(allData).forEach(([id,s])=>{
-    if(id.includes(v)||s.name.toLowerCase().includes(v)){
+    if(id.includes(keyword)||s.name.toLowerCase().includes(keyword)){
       const div=document.createElement("div");
       div.className="search-item";
-      div.textContent=`${id} - ${s.name}`;
-      div.onclick=()=>{
-        dropdown.style.display="none";
-        showStudent(id);
-      };
+      div.textContent=id+" - "+s.name;
+      div.onclick=()=>{showStudent(id);dropdown.classList.remove("show");};
       dropdown.appendChild(div);
     }
   });
+  dropdown.classList.toggle("show", dropdown.innerHTML!=="");
+});
 
-  dropdown.style.display=dropdown.innerHTML?"block":"none";
+document.addEventListener("click",function(e){
+  if(!document.querySelector(".search-container").contains(e.target)){
+    dropdown.classList.remove("show");
+  }
 });
 
 function showStudent(id){
-  const s=allData[id];
-  if(!s) return;
-
+  currentId=id;
+  currentStudent=allData[id];
   document.getElementById("studentName").textContent=
-    `${s.name} (${s.class})`;
+    currentStudent.name+" ("+currentStudent.class+")";
+  renderSubjects();
+}
 
-  const btns=document.getElementById("subjectButtons");
-  btns.innerHTML="";
+function renderSubjects(){
+  const box=document.getElementById("subjectButtons");
+  box.innerHTML="";
+  document.getElementById("content").innerHTML="";
+  document.getElementById("summaryContainer").style.display="none";
+  document.getElementById("progressSection").style.display="none";
 
-  for(const subject in s.subjects){
-
-    const items=s.subjects[subject];
-
+  for(const subject in currentStudent.subjects){
     const btn=document.createElement("button");
     btn.className="subject-btn";
     btn.textContent=subject;
-
     btn.onclick=()=>{
       document.querySelectorAll(".subject-btn")
       .forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
-
-      document.getElementById("content").innerHTML=
-        renderTable(subject,items);
+      renderSubject(subject);
     };
-
-    btns.appendChild(btn);
+    box.appendChild(btn);
   }
-
-  document.getElementById("content").innerHTML="";
 }
 
-function renderTable(subjectName,items){
+function renderSubject(subject){
 
   let total=0,full=0;
+  currentStudent.subjects[subject].forEach(i=>{
+    total+=Number(i.score);
+    full+=Number(i.full);
+  });
 
-  let html=`
-  <table>
-  <tr><th colspan="4">${subjectName}</th></tr>
-  <tr>
-    <th>รายการ</th><th>ได้</th><th>เต็ม</th><th>เกรด</th>
-  </tr>`;
+  const percent=Math.round((total/full)*100);
+  const g=grade(percent);
 
-  items.forEach(i=>{
-    const percent=(i.score/i.full)*100;
-    const g=grade(percent);
-    total+=i.score;
-    full+=i.full;
+  document.getElementById("summaryContainer").style.display="flex";
+  document.getElementById("summaryContainer").innerHTML=`
+    <div class="summary-card">คะแนนรวม<div class="value">${total}</div></div>
+    <div class="summary-card">เปอร์เซ็นต์<div class="value">${percent}%</div></div>
+    <div class="summary-card">เกรด<div class="value">${g}</div></div>
+  `;
 
+  document.getElementById("progressSection").style.display="block";
+  const fill=document.getElementById("progressFill");
+  fill.style.width="0%";
+  fill.style.background=getColor(g);
+  setTimeout(()=>{
+    fill.style.width=percent+"%";
+    fill.textContent=`ความคืบหน้าคะแนนวิชา ${subject} : ${percent}% (เกรด ${g})`;
+  },100);
+
+  let html=`<table>
+  <tr><th>เนื้อหา</th><th>คะแนนที่ได้</th><th>คะแนนเต็ม</th><th>เกรด</th></tr>`;
+
+  currentStudent.subjects[subject].forEach(i=>{
+    const p=(i.score/i.full)*100;
+    const g2=grade(p);
     html+=`
     <tr>
       <td>${i.chapter}</td>
       <td>${i.score}</td>
       <td>${i.full}</td>
-      <td class="grade-${g}">${g}</td>
+      <td class="grade-${g2}">${g2}</td>
     </tr>`;
   });
 
-  const totalGrade=grade((total/full)*100);
-
   html+=`
   <tr class="total-row">
-    <td>รวม</td>
+    <td>รวมทั้งวิชา</td>
     <td>${total}</td>
     <td>${full}</td>
-    <td>${totalGrade}</td>
+    <td>${g}</td>
   </tr>
-  </table>`;
+  </table>
 
-  return html;
+  <button class="rank-toggle" onclick="toggleRank('${subject}')">
+    การจัดอันดับคะแนนภายในห้องเรียนของรายวิชานี้
+  </button>
+  <div class="rank-section" id="rankSection"></div>
+
+  <div class="grade-detail-box">
+    <h3>📘 รายละเอียดการตัดเกรด</h3>
+    <div class="grade-grid">
+      <div class="grade-item grade-A-box">A<br>80 – 100 คะแนน</div>
+      <div class="grade-item grade-B-box">B<br>70 – 79 คะแนน</div>
+      <div class="grade-item grade-C-box">C<br>60 – 69 คะแนน</div>
+      <div class="grade-item grade-D-box">D<br>50 – 59 คะแนน</div>
+      <div class="grade-item grade-F-box">F<br>ต่ำกว่า 50 คะแนน</div>
+    </div>
+  </div>
+  `;
+
+  document.getElementById("content").innerHTML=html;
 }
 
-function grade(p){
-  if(p>=80) return "A";
-  if(p>=70) return "B";
-  if(p>=60) return "C";
-  if(p>=50) return "D";
-  return "F";
+function toggleRank(subject){
+  const box=document.getElementById("rankSection");
+  if(box.style.display==="block"){
+    box.style.display="none";
+    box.innerHTML="";
+    return;
+  }
+
+  let ranking=[];
+  Object.entries(allData).forEach(([id,s])=>{
+    if(s.class===currentStudent.class && s.subjects[subject]){
+      let total=0;
+      s.subjects[subject].forEach(i=>total+=Number(i.score));
+      ranking.push({id,name:s.name,total});
+    }
+  });
+
+  ranking.sort((a,b)=>b.total-a.total);
+
+let rank = 0;
+let lastScore = null;
+
+ranking.forEach((r)=>{
+  if(r.total !== lastScore){
+    rank++;   // เพิ่มทีละ 1 เท่านั้น
+  }
+  r.rank = rank;
+  lastScore = r.total;
+});
+
+
+  let html=`<table>
+  <tr><th>อันดับ</th><th>รหัส</th><th>ชื่อ</th><th>คะแนนรวม</th></tr>`;
+
+  ranking.forEach(r=>{
+    html+=`
+    <tr class="${r.id===currentId?'highlight':''}">
+      <td>${getRankDisplay(r.rank)}</td>
+      <td>${r.id}</td>
+      <td>${r.name}</td>
+      <td>${r.total}</td>
+    </tr>`;
+  });
+
+  html+="</table>";
+
+  box.innerHTML=html;
+  box.style.display="block";
 }
 
 </script>
-
 </body>
 </html>
+
 
