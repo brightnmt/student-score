@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard Ultimate</title>
+<title>🎓 ระบบค้นหาคะแนนนักเรียน โกโกคิดส์ สงขลา</title>
 
 <style>
 body{
@@ -174,16 +174,28 @@ h2{text-align:center;color:white;}
   border-radius:30px;
   border:none;
   cursor:pointer;
-  background:linear-gradient(90deg,#1b5e20,#4caf50,#e91e63);
-  background-size:200% 200%;
-  color:white;
+  background:white;
+  color:#e91e63;
   font-weight:bold;
   font-size:15px;
   letter-spacing:.5px;
   transition:all .3s ease;
   box-shadow:0 8px 20px rgba(0,0,0,.3);
 }
-.rank-toggle:active{transform:scale(.95);}
+
+/* ตอนกดแล้ว */
+.rank-toggle.active{
+  background:linear-gradient(135deg,#ad1457,#e91e63,#ff4081);
+  background-size:200% 200%;
+  animation:pinkGlow 4s ease infinite;
+  color:white;
+}
+
+@keyframes pinkGlow{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
 
 .rank-section{display:none;margin-top:10px;}
 .medal{font-size:22px;}
@@ -430,11 +442,16 @@ function renderSubject(subject){
 
 function toggleRank(subject){
   const box=document.getElementById("rankSection");
+  const btn=document.querySelector(".rank-toggle");
+
   if(box.style.display==="block"){
     box.style.display="none";
     box.innerHTML="";
+    btn.classList.remove("active"); // เอา active ออก
     return;
   }
+
+  btn.classList.add("active"); // เพิ่ม active ตอนเปิด
 
   let ranking=[];
   Object.entries(allData).forEach(([id,s])=>{
