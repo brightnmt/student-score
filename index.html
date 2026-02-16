@@ -120,24 +120,32 @@ h2{text-align:center;color:white;}
   align-items:center;
   justify-content:center;
   color:white;
-  font-weight:bold;
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:.3px;
   border-radius:50px;
   transition:width .8s ease;
   position:relative;
   overflow:hidden;
+  padding:0 20px;           /* เพิ่มระยะหายใจ */
+  text-align:center;
+  white-space:nowrap;       /* ไม่ให้ตัดบรรทัด */
+  text-shadow:0 1px 3px rgba(0,0,0,.4); /* อ่านง่ายขึ้น */
 }
+
+/* ลดความแรงแสง */
 .progress-fill::after{
   content:"";
   position:absolute;
   top:0;
   left:-40%;
-  width:40%;
+  width:30%;
   height:100%;
   background:linear-gradient(120deg,
-    rgba(255,255,255,0.2) 0%,
-    rgba(255,255,255,0.7) 50%,
-    rgba(255,255,255,0.2) 100%);
-  animation:shine 3s infinite;
+    rgba(255,255,255,0.15) 0%,
+    rgba(255,255,255,0.4) 50%,
+    rgba(255,255,255,0.15) 100%);
+  animation:shine 4s infinite;
 }
 @keyframes shine{
   0%{left:-40%;}
@@ -393,7 +401,7 @@ function renderSubject(subject){
   fill.style.background=getColor(g);
   setTimeout(()=>{
     fill.style.width=percent+"%";
-    fill.textContent=`ความคืบหน้าคะแนนวิชา ${subject} : ${percent}% (เกรด ${g})`;
+    fill.textContent=`คะแนนวิชา ${subject} : ${percent}% (เกรด ${g})`;
   },100);
 
   let html=`<table>
@@ -421,20 +429,20 @@ function renderSubject(subject){
   </table>
 
   <button class="rank-toggle" onclick="toggleRank('${subject}')">
-    การจัดอันดับคะแนนภายในห้องเรียนของรายวิชานี้
+    🏆 การจัดอันดับคะแนนภายในห้องเรียนของรายวิชานี้
   </button>
   <div class="rank-section" id="rankSection"></div>
 
   <div class="grade-detail-box">
-    <h3>📘 รายละเอียดการตัดเกรด</h3>
-    <div class="grade-grid">
-      <div class="grade-item grade-A-box">A<br>80 – 100 คะแนน</div>
-      <div class="grade-item grade-B-box">B<br>70 – 79 คะแนน</div>
-      <div class="grade-item grade-C-box">C<br>60 – 69 คะแนน</div>
-      <div class="grade-item grade-D-box">D<br>50 – 59 คะแนน</div>
-      <div class="grade-item grade-F-box">F<br>ต่ำกว่า 50 คะแนน</div>
-    </div>
+  <h3>📘 รายละเอียดการตัดเกรด (คิดเป็นเปอร์เซ็นต์)</h3>
+  <div class="grade-grid">
+    <div class="grade-item grade-A-box">A<br>80% – 100%</div>
+    <div class="grade-item grade-B-box">B<br>70% – 79%</div>
+    <div class="grade-item grade-C-box">C<br>60% – 69%</div>
+    <div class="grade-item grade-D-box">D<br>50% – 59%</div>
+    <div class="grade-item grade-F-box">F<br>ต่ำกว่า 50%</div>
   </div>
+</div>
   `;
 
   document.getElementById("content").innerHTML=html;
